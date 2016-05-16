@@ -7,6 +7,7 @@
 -export([
 	start/2,
 	stop/1,
+	mod_opt_type/1,
 	get/2,
 	get_jid_info/4,
 	in_subscription/6,
@@ -37,6 +38,8 @@ stop(Host) ->
 	%ejabberd_hooks:delete(roster_out_subscription,	Host,	?MODULE,	out_subscription, 20),
 	ejabberd_hooks:delete(roster_get_subscription_lists,	Host,	?MODULE,	get_subscription_lists, 120),
 	ejabberd_hooks:delete(roster_process_item,	Host,	?MODULE,	process_item, 120).
+
+mod_opt_type(_) -> [].
 
 
 get(Items, _US) ->
