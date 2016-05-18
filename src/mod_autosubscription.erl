@@ -74,7 +74,20 @@ process_item(RosterItem, _Host) ->
 	?DEBUG("mod_autosubscription/process_item: ~p", [RosterItem]),
 	% XXX process roster.us as well?
 	case RosterItem#roster.subscription =/= remove andalso is_local(RosterItem#roster.jid) of
-		true -> RosterItem#roster{subscription = both, ask = none};
+		true ->
+			% re-push roster item so it appears mutually subscribed for already logged in users as well
+			{LUser, LServer} = RosterItem#roster.us,
+			ejabberd_sm:route(
+				jid:make(<<"">>, <<"">>, <<"">>),
+				jid:make(LUser, LServer, <<"">>),
+				{broadcast, {
+					item,
+					RosterItem#roster.jid,
+					both
+				}}
+			),
+
+			RosterItem#roster{subscription = both, ask = none};
 		false -> RosterItem
 	end.
 
